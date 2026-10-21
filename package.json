@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@vitejs/plugin-react": "6.1.2",
     "concurrently": "10.0.6",
     "eslint": "10.13.0",
     "eslint-plugin-react-hooks": "7.1.1",
