@@ -2,15 +2,29 @@
   "name": "cajurasp",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["frontend", "backend"],
-  "engines": { "node": ">=22.12.0" },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "engines": {
+    "node": ">=22.18.0"
+  },
   "scripts": {
     "dev": "concurrently --kill-others -n api,web \"npm run dev -w backend\" \"npm run dev -w frontend\"",
-    "build": "npm run build --workspaces",
+    "lint": "eslint .",
     "typecheck": "npm run typecheck --workspaces",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "start": "npm run start -w backend"
   },
   "devDependencies": {
-    "concurrently": "10.0.6"
+    "@eslint/js": "10.0.1",
+    "concurrently": "10.0.6",
+    "eslint": "10.13.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.7",
+    "globals": "17.13.0",
+    "typescript-eslint": "8.72.0"
   }
 }

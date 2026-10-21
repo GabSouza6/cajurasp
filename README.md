@@ -54,15 +54,15 @@ Um vendedor possui 50 raspadinhas. Ao informar que sobraram 20, o sistema regist
 
 ## Estado atual
 
-Base da Issue 02 implementada: frontend React com Vite e Tailwind, API Express e TypeScript, organizados em npm workspaces. A tela inicial consulta `GET /api/health` e mostra carregamento, sucesso ou falha com opção de tentar novamente.
+Base das Issues 02 e 03 implementada: frontend React com Vite e Tailwind, API Express e TypeScript, organizados em npm workspaces. A tela inicial consulta `GET /api/health` e mostra carregamento, sucesso ou falha com opção de tentar novamente. ESLint, Vitest, Supertest e GitHub Actions estão configurados.
 
-Banco, autenticação e funcionalidades de negócio ainda serão implementados. ESLint, Vitest, Supertest e CI ficam para a Issue 03.
+Banco, autenticação e funcionalidades de negócio ainda serão implementados.
 
 As imagens em `design/` são referências visuais provisórias e ainda não foram aprovadas.
 
 ## Executar localmente
 
-Requisitos: Node.js 22.12 ou superior e npm 10 ou superior. A base foi verificada com Node.js 22.18 e npm 10.9.
+Requisitos: Node.js 22.18 ou superior e npm 10 ou superior. A base foi verificada com Node.js 22.18.0 e npm 10.9.3.
 
 Na raiz do repositório:
 
@@ -95,12 +95,32 @@ Execute na raiz:
 | `npm run dev` | Inicia frontend e backend com recarga |
 | `npm run dev -w frontend` | Inicia somente o frontend |
 | `npm run dev -w backend` | Inicia somente a API |
-| `npm run typecheck` | Verifica os tipos dos dois projetos |
+| `npm run lint` | Verifica problemas estáticos nos dois projetos |
+| `npm run typecheck` | Verifica os tipos dos dois projetos, incluindo os testes |
+| `npm run test` | Executa os testes uma vez e encerra |
+| `npm run test:watch -w frontend` | Executa os testes do frontend em modo de observação |
+| `npm run test:watch -w backend` | Executa os testes do backend em modo de observação |
 | `npm run build` | Verifica os tipos e gera `frontend/dist` e `backend/dist` |
+| `npm run check` | Executa lint, tipos, testes e build em sequência |
 | `npm start` | Executa a API compilada, após o build |
 | `npm run preview -w frontend` | Prévia local dos arquivos compilados do frontend |
 
 `npm start` executa somente a API. A prévia do Vite não configura o proxy de desenvolvimento; para validar a conexão entre os projetos, use `npm run dev`. A hospedagem integrada do frontend e da API será preparada na etapa de publicação.
+
+## Verificações e CI
+
+O comando `npm run check` executa as verificações nesta ordem:
+
+1. `npm run lint`: ESLint no frontend e no backend, com suporte a TypeScript e regras de hooks do React.
+2. `npm run typecheck`: verificação de tipos sem gerar arquivos, incluindo os testes.
+3. `npm run test`: Vitest uma vez em cada workspace. O frontend usa jsdom e React Testing Library; o backend usa Supertest.
+4. `npm run build`: compila o backend e gera o build do frontend.
+
+A execução para na primeira etapa que falhar. Os testes cobrem a rota `GET /api/health` e os estados de carregamento, sucesso e falha da página inicial. Eles não iniciam servidores manualmente e não acessam banco, internet ou Supabase.
+
+O workflow `.github/workflows/ci.yml` roda em pushes para `main` e também pode ser iniciado manualmente. Ele instala as dependências com `npm ci`, usa Node.js 22.18.0 e executa `npm run check` com permissão somente de leitura (`contents: read`). O workflow não usa arquivos `.env`, credenciais ou dados de produção e não faz deploy.
+
+O CI verifica o código depois do push. Por isso, execute `npm run check` localmente antes de enviar alterações. Para acompanhar no GitHub, abra a aba **Actions** do repositório, selecione o workflow **CI** e a execução correspondente ao commit; os detalhes mostram o resultado de cada etapa.
 
 ## Dependências e arquivos gerados
 
@@ -112,4 +132,4 @@ Pastas `node_modules/`, `dist/` e arquivos `.env` são ignorados pelo Git. Os ex
 
 ## Fluxo de desenvolvimento
 
-Uma issue por vez, diretamente na `main`, com commits pequenos seguindo Conventional Commits. As verificações automatizadas serão adicionadas nas próximas tarefas.
+Uma issue por vez, diretamente na `main`, com commits pequenos seguindo Conventional Commits. Antes de cada push, execute `npm run check`; o CI repete as verificações após o envio para `main`.
